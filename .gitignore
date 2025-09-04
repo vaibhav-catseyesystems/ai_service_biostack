@@ -1,0 +1,11 @@
+.env 
+.env.dev
+.env.prod
+.env.uat
+vendor/ 
+app.log
+
+/env
+controller/__pycache__/
+utils/__pycache__/
+services/__pycache__/

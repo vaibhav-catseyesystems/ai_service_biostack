@@ -3,6 +3,9 @@ from services.gemini_service import process_document
 from utils.response import make_response
 from utils.config import Config
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 gemini_bp = Blueprint("api", __name__)
   
@@ -23,8 +26,8 @@ def extract_medical_data_controller():
     if mime_type not in Config.ALLOWED_MIMETYPES:
         return make_response(415, "failure", None, "Invalid file type. Only PDF and image files are allowed.")
     try:
+        logger.info(f"Getting response for file: {file.filename} relatives: {relatives_string}")
         file_bytes = file.read()
-        mime_type = file.mimetype
         response_text = process_document(file_bytes, mime_type, relatives_string)
         response_data = json.loads(response_text)
         return jsonify(response_data), 200 #make_response(200, "success", response_data, None)

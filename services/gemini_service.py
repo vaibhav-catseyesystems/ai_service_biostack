@@ -123,6 +123,11 @@ scans:
 
 Also, my family members are: {relatives_string}
 So based on the document owner you identified, do a near match to know whose document this is.
+When identifying "near_matched_with":
+- A near match means the document owner's name appears to be the SAME person written differently (e.g., spelling variation, initials instead of full name, missing/extra middle name, honorifics like Mr./Mrs.).
+- Do NOT consider it a match if only part of the name (such as just the surname or a different first name) overlaps. Different individuals with coincidental partial name overlaps must be treated as distinct, and in that case "near_matched_with" must be null.
+- Only return a family member as near match if both the first and last names (or clear abbreviations/initials of them) correspond strongly to the same person.
+
 
 At the end, I want everything returned in the following JSON format:
 {{

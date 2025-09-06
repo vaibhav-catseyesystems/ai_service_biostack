@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-gemini_bp = Blueprint("api", __name__)
+gemini_bp = Blueprint("gemini", __name__)
   
 @gemini_bp.route("/extract-details-ai", methods=["POST"])
 def extract_medical_data_controller():

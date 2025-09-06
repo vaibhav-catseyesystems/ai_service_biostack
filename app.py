@@ -1,6 +1,7 @@
 from flask import Flask
 from controller.document_controller import document_bp
 from controller.gemini_controller import gemini_bp
+from controller.extraction_controller import extraction_bp
 from utils.response import make_response
 from utils.logger_config import setup_logging
 
@@ -9,7 +10,8 @@ def create_app():
     app = Flask(__name__)
     
     # Register Blueprints
-    # app.register_blueprint(document_bp, url_prefix="/api")
+    app.register_blueprint(extraction_bp, url_prefix="/api")
+    app.register_blueprint(document_bp, url_prefix="/api")
     app.register_blueprint(gemini_bp, url_prefix="/api")
 
     @app.route("/health", methods=["GET"])

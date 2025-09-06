@@ -9,3 +9,5 @@ app.log
 controller/__pycache__/
 utils/__pycache__/
 services/__pycache__/
+/logs
+test.py

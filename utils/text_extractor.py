@@ -30,9 +30,15 @@ def extract_text_from_pdf_textual(file_bytes: bytes) -> str:
         doc = fitz.open("pdf", file_bytes)
         full_text = []
         for i, page in enumerate(doc, start=1):
-            text = page.get_text("text")
-            if text.strip():
-                full_text.append(f"\n--- Page {i} ---\n{text.strip()}")
+            blocks = page.get_text("blocks")
+            page_text = []
+            for block in blocks:
+                if len(block) >= 5:
+                    text = block[4].strip()
+                    if text:
+                        page_text.append(text)
+            if page_text:
+                full_text.append(f"\n--- Page {i} ---\n" + "\n".join(page_text))
         doc.close()
         return "\n".join(full_text).strip()
     except Exception as e:

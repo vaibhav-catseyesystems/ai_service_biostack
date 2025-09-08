@@ -284,3 +284,14 @@ At the end, I want everything returned in the following JSON format:
 }}
 Do not return anything extra and make sure you return valid json.
 """
+
+GEMINI_EXTRACT_PASSWORD_PROMPT_TEMPLATE = """
+You are given some text. Your task is to identify a PDF password in it. 
+Rules:
+- If you find one or more possible passwords, output exactly ONE password (choose the first if multiple).
+- Output ONLY the password string, with no quotes, no extra words, no formatting.
+- If no password is found, output exactly: NOT_FOUND
+
+Text: {raw_text}
+
+"""

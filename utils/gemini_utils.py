@@ -53,3 +53,16 @@ def generate_content_with_file(client, prompt_string, file_bytes, mime_type):
     except Exception as e:
         logger.error(f"Gemini API call failed: {e}")
         raise RuntimeError(f"Gemini API call failed: {e}")
+
+def get_gemini_response(client, prompt_string):
+    try:
+        response=client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                {"role": "user", "parts": [{"text": prompt_string}]}
+            ]
+        )
+        return response.text
+    except Exception as e:
+        logger.error(f"Gemini API call failed: {e}")
+        raise RuntimeError(f"Gemini API call failed: {e}")

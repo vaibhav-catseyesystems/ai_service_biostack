@@ -1,5 +1,5 @@
-from utils.gemini_utils import get_gemini_model, generate_content_with_file
-from utils.GeminiPrompts import GEMINI_EXTRACT_DETAILS_PROMPT_TEMPLATE, GEMINI_EXTRACT_TEST_REPORT_DETAILS_PROMPT_TEMPLATE, GEMINI_EXTRACT_INVOICE_DETAILS_PROMPT_TEMPLATE
+from utils.gemini_utils import get_gemini_model, generate_content_with_file, get_gemini_response
+from utils.GeminiPrompts import GEMINI_EXTRACT_DETAILS_PROMPT_TEMPLATE, GEMINI_EXTRACT_TEST_REPORT_DETAILS_PROMPT_TEMPLATE, GEMINI_EXTRACT_INVOICE_DETAILS_PROMPT_TEMPLATE, GEMINI_EXTRACT_PASSWORD_PROMPT_TEMPLATE
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,3 +35,12 @@ def extract_document_details(file_bytes, mime_type, relatives_string, document_t
       json_string = raw_response_text.strip()        
   return json_string
 
+def extract_password_from_text(raw_text):
+    try:
+        full_prompt = GEMINI_EXTRACT_PASSWORD_PROMPT_TEMPLATE.format(raw_text=raw_text)
+        model = get_gemini_model()
+        password = get_gemini_response(model, full_prompt)
+        return {"password":password}
+    except Exception as e:
+        print(f"[ERROR] extract_password_from_text failed: {str(e)}")
+        raise

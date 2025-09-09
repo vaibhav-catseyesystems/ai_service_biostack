@@ -2,19 +2,32 @@
 GEMINI_EXTRACT_DETAILS_PROMPT_TEMPLATE = """
 You are an expert medical document analyzer
 Your task has two steps:
-1. **Domain Check:** First determine if the document is related to the medical/healthcare domain. 
-   - Medical examples: test reports, prescriptions/medications, hospital invoices, insurance related to health, vaccination records, discharge summaries, medical scans, etc.
-   - Non-medical examples: invoices from restaurants (e.g., Zomato), shops, appliances, textiles, or insurances for vehicles, homes, travel, etc.
+### 1. Domain Check (MANDATORY and STRICT):
+- First decide if the document is related to the healthcare/medical domain.  
+- A document is **medical** if it relates to: hospitals, doctors, prescriptions, medications, lab tests, diagnostic scans, discharge summaries, vaccinations, medical invoices, or health/medical insurance.  
+- A document is **non_medical** if it relates to: restaurants, shopping, travel, vehicle/home insurance, bank statements, retail receipts, utility bills, or anything outside healthcare.  
+- Returning "unknown" or "unidentified" is **not allowed**.  
+- If the document is medical, go to Step 2. If not, classify as `"non_medical"`.
 
-2. **Bucket Classification (only if medical):**
-   - test_report
-   - medications
-   - insurance (only health/medical insurance)
-   - invoice (only medical/hospital/pharmacy invoices)
-   - vaccinations
-   - discharge_summary
-   - scans
-   - other (if it is medical but does not match above)
+### 2. Bucket Classification (STRICT):
+If the document is medical, classify it into exactly **one** of these buckets:  
+["test_report","medications","insurance","invoice","vaccinations","discharge_summary","scans","other"]
+
+#### Explicit Rules:  
+- **test_report** → Pathology and functional tests: blood, urine, stool, biopsy, histopathology, ECG, Echo, TMT, Holter, lab reports.   
+- **medications** → Prescriptions or medicine lists (look for Rx, prescribed by, dosage, tablet, syrup, capsule).   
+- **insurance** → Health/medical insurance documents (policy no, insured person, insurance company).  
+- **invoice** → Any billing, receipt, payment record from hospital, clinic, pharmacy, or lab (look for words like "Bill No", "Invoice", "Receipt", "Gross Total", "Grand Total", "Amount").
+- **vaccinations** → Immunization records (vaccine name, dose, booster, immunization card).  
+- **discharge_summary** → Hospital discharge documents (look for "Admission Date", "Discharge Date", hospital name, diagnosis on discharge).
+- **scans** → Imaging/radiology: MRI, CT, X-ray, PET, Ultrasound, Doppler, Mammogram.
+- **other** → Only use if the document is medical but does not fit any above (e.g., admission notes, consent forms, procedure preparation sheets).
+
+**Strict rule:**  
+The `"document_bucket"` must always be one of:  
+["test_report","medications","insurance","invoice","vaccinations","discharge_summary","scans","other","non_medical"]  
+Do not output `"unknown"`, `"unidentified"`, or any other label.
+
 
 Based on the bucket, I want to extract its details as follows in the given JSON format:
 test_report:
@@ -140,10 +153,11 @@ When determining "near_matched_with":
 - If no family member meets this stricter criterion,
   return `"near_matched_with": null`.
 
+### Output Format
 At the end, I want everything returned in the following JSON format:
 {{
-  "document_bucket":"string", // document type you identified
-  "document_owner":"string", // name of person to whom this document belongs
+  "document_bucket":"string", // document type you identified, must be one of the allowed values
+  "document_owner":"string", // name of person to whom this document belongs, otherwise null
   "document_details": {{...}}, // here goes the details you extracted based on the document bucket. `null` in case no details were extracted
   "near_matched_with": {{
     "name":"string",
@@ -151,7 +165,10 @@ At the end, I want everything returned in the following JSON format:
   }} // name of family member that near matched with. In case it's not matching with any family member, return null.
   "summary":"string" // this will contain reason for choosing specific bucket, why chosen document owner and reason for near match
 }}
-Do not return anything extra and make sure you return valid json.
+Strict Rules
+ Do not return anything extra and make sure you return valid json.
+ Choose exactly one bucket from this list: ["test_report", "medications", "insurance", "invoice", "vaccinations", "discharge_summary", "scans", "other", "non_medical"]
+ Do not return "unknown", "unidentified", or any custom category outside this list.
 """
 
 GEMINI_EXTRACT_TEST_REPORT_DETAILS_PROMPT_TEMPLATE = """

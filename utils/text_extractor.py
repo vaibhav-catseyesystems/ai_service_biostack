@@ -5,11 +5,14 @@ import fitz
 from io import BytesIO
 from paddleocr import PaddleOCR
 import os
+import platform
 
 OCR_ENGINE = os.getenv("OCR_ENGINE", "paddleocr").lower()
 
 # configure tesseract path for Windows (if needed)
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+if platform.system() == 'Windows':
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 _paddle_ocr = None
 
 def get_paddle_ocr():

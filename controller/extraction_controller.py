@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from utils.response import make_response
 from services.extraction_service import extract_content, check_pdf_protection
 from services.gemini_service import extract_password_from_text
+import logging
+logger = logging.getLogger(__name__)
 
 extraction_bp = Blueprint("extraction", __name__)
   
@@ -40,8 +42,11 @@ def get_pdf_password_controller():
             return make_response(400, "failure", None, "please provide file contents")
         raw_text = data["text"]
         result = extract_password_from_text(raw_text=raw_text)
+        logger.info(f"extract_password_from_text: raw_text {raw_text} password: {result}")
         return jsonify(result)
     except ValueError as ve:
+        logger.error(f"extract_password_from_text: 400: {str(ve)} ")
         return make_response(400, "failure", None, str(ve))
     except Exception as e:
+        logger.error(f"extract_password_from_text: 500: {str(e)} ")
         return make_response(500, "failure", None, str(e))

@@ -38,10 +38,10 @@ def check_pdf_protection_controller():
 def get_pdf_password_controller():
     try:
         data = request.get_json()
-        if not data or "text" not in data:
+        if not data or "body" not in data:
             logger.error(f"extract_password_from_text: 400: please provide file contents, invalid request ")
             return make_response(400, "failure", None, "please provide file contents")
-        raw_text = data["text"]
+        raw_text = data["body"]
         result = extract_password_from_text(raw_text=raw_text)
         logger.info(f"extract_password_from_text: raw_text {raw_text} password: {result}")
         return jsonify(result)

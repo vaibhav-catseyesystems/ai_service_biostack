@@ -39,6 +39,7 @@ def get_pdf_password_controller():
     try:
         data = request.get_json()
         if not data or "text" not in data:
+            logger.error(f"extract_password_from_text: 400: please provide file contents, invalid request ")
             return make_response(400, "failure", None, "please provide file contents")
         raw_text = data["text"]
         result = extract_password_from_text(raw_text=raw_text)
